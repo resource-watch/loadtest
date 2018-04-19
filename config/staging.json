@@ -1,0 +1,8 @@
+{
+    "logger": {
+        "name": "loadtest",
+        "level": "debug",
+        "toFile": false,
+        "dirLogFile": null
+    }
+}

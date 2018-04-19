@@ -1,0 +1,12 @@
+{
+     "logger": {
+        "name": "loadtest-DEV",
+        "level": "debug",
+        "toFile": false,
+        "dirLogFile": null
+    },
+    "service": {
+        "name": "Loadtest",
+        "port": 3000
+    }
+}

@@ -1,0 +1,12 @@
+{
+	"name": "Load Test",
+	"tags": ["loadtest"],
+	"endpoints": [{
+		"path": "/v1/loadtest",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/loadtest"
+		}
+	}]
+}

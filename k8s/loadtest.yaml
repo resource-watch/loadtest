@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: loadtest
+  name: loadtest
+spec:
+  ports:
+    - port: 3000
+  selector:
+    name: loadtest
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    name: loadtest
+  name: loadtest
+spec:
+  template:
+    metadata:
+      labels:
+        name: loadtest
+    spec:
+      containers:
+      - name: loadtest
+        image: vizzuality/loadtest:1.0.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: "128Mi"
+        args:
+          - start
+        env:
+          - name: PORT
+            value: "3000"
+          - name: NODE_ENV
+            value: prod
+          - name: NODE_PATH
+            value: app/src
+          - name: LOCAL_URL
+            value: http://loadtest.default.svc.cluster.local:3000
+          - name: CT_URL
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: CT_URL
+          - name: CT_TOKEN
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: CT_TOKEN
+          - name: CT_REGISTER_MODE
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: CT_REGISTER_MODE
+          - name: API_VERSION
+            valueFrom:
+                secretKeyRef:
+                  name: mssecrets
+                  key: API_VERSION
+
+        ports:
+          - containerPort: 3000
+
+      restartPolicy: Always
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: loadtest
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: loadtest
+  minReplicas: 10
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 60
